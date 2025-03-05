@@ -31,7 +31,7 @@ public class Main {
         {
             for(int i=0;i<k;i++)
                 for(int j=i+1;j<k;j++)
-                    if(m[vector[i]][vector[j]]==1)
+                    if(m[vector[i]][vector[j]]==0)
                         return 0;
             return 1;
         }
