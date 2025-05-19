@@ -1,0 +1,10 @@
+May 14, 2025 10:40:51 AM org.example.repositories.AbstractRepository executeNamedQuery
+INFO: Executed executeNamedQuery() [Continent.findByName] in 209 ms
+May 14, 2025 10:40:51 AM org.example.repositories.AbstractRepository executeNamedQuery
+INFO: Executed executeNamedQuery() [Country.findByName] in 27 ms
+May 14, 2025 10:40:51 AM org.example.repositories.AbstractRepository executeNamedQuery
+INFO: Executed executeNamedQuery() [City.findByName] in 17 ms
+May 14, 2025 10:40:51 AM org.example.repositories.AbstractRepository findById
+INFO: Executed findById() in 8 ms
+May 14, 2025 10:40:51 AM org.example.repositories.AbstractRepository executeNamedQuery
+INFO: Executed executeNamedQuery() [City.findByName] in 15 ms
