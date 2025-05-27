@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab12</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h1>City List</h1>
+<div class="container">
+    <div class="card">
+        <h1>Add City</h1>
+        <form id="addCityForm">
+            <label for="name">City Name:</label>
+            <input type="text" id="name" name="name" required><br><br>
+            <label for="country">City Country:</label>
+            <input type="text" id="country" name="country" required><br><br>
+            <label for="capital">Is city the capital?:</label>
+            <input type="checkbox" id="capital" name="capital" value="true"><br><br>
+            <label for="latitude">City Latitude:</label>
+            <input type="number" id="latitude" name="latitude" required step="any"><br><br>
+            <label for="longitude">City Longitude:</label>
+            <input type="number" id="longitude" name="longitude" required step="any"><br><br>
+            <button type="submit">Submit</button>
+        </form>
+        <br>
+        <div id="resultForAdd"></div>
+    </div>
+    <div class="card">
+        <h1>Update City Name</h1>
+        <form id="updateCityForm">
+            <label for="oldName">Old name:</label>
+            <input type="text" id="oldName" name="oldName" required><br><br>
+            <label for="newName">New name:</label>
+            <input type="text" id="newName" name="newName" required><br><br>
+            <button type="submit">Submit</button>
+        </form>
+        <br>
+        <div id="resultForUpdate"></div>
+    </div>
+    <div class="card">
+        <h1>Delete City Name</h1>
+        <form id="deleteCityForm">
+            <label for="deleteName">City Name:</label>
+            <input type="text" id="deleteName" name="deleteName" required><br><br>
+            <button type="submit">Submit</button>
+        </form>
+        <br>
+        <div id="resultForDelete"></div>
+    </div>
+</div>
+<button onclick="fetchCities()">Get Cities</button>
+<ul id="cityList"></ul>
+
+<a href="countries">Go to countries.</a>
+
+<script>
+    function fetchCities() {
+        fetch('/cities/list', {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + "cevaaa" //aici nu va merge
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                const documentList = document.getElementById('cityList');
+                documentList.innerHTML = '';
+                data.forEach(city => {
+                    const li = document.createElement('li');
+                    li.textContent = (String) ("City with id: " + city.id +", name: " + city.name + ", country: " + city.country + ", capital: " + city.capital + ", latitude: " + city.latitude + ", longitude: " + city.longitude);
+                    documentList.appendChild(li);
+                });
+            });
+    }
+    document.getElementById('addCityForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const data = {
+            name: form.name.value,
+            country: form.country.value,
+            capital: form.capital.checked,
+            latitude: parseFloat(form.latitude.value),
+            longitude: parseFloat(form.longitude.value)
+        };
+
+        fetch('/cities/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+            },
+            body: JSON.stringify(data)
+        })
+            .then(result => result.text())
+            .then(message => document.getElementById('resultForAdd').innerText = message)
+            .catch(error => {
+                document.getElementById('resultForAdd').innerText = 'Submission failed: ' + error.message;
+            });
+    });
+    document.getElementById('updateCityForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const params = new URLSearchParams({
+            oldName: form.oldName.value,
+            newName: form.newName.value
+        });
+
+        fetch('/cities/update?' + params, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+            },
+        })
+            .then(result => result.text())
+            .then(message => document.getElementById('resultForUpdate').innerText = message)
+            .catch(error => {
+                document.getElementById('resultForUpdate').innerText = 'Submission failed: ' + error.message;
+            });
+    });
+    document.getElementById('deleteCityForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const params = new URLSearchParams({name: form.deleteName.value});
+
+        fetch('/cities/delete?' + params, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+            },
+        })
+            .then(result => result.text())
+            .then(message => document.getElementById('resultForDelete').innerText = message)
+            .catch(error => {
+                document.getElementById('resultForDelete').innerText = 'Submission failed: ' + error.message;
+            });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+*,
+*::after,
+*::before{
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Courier 10 Pitch';
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1{
+    text-align: center;
+}
+
+.container{
+    width: 100%;
+    display: flex;
+    gap: 16px;
+    justify-content: space-evenly;
+}
+
+.card{
+    max-width: 400px;
+    flex-wrap: wrap;
+}

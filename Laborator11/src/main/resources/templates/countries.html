@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 12</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h1>Country List</h1>
+<div class="container">
+    <div class="card">
+        <form id="addCountryForm">
+            <label for="name">Country Name:</label>
+            <input type="text" id="name" name="name" required><br><br>
+            <label for="code">Country Code:</label>
+            <input type="text" id="code" name="code" required><br><br>
+            <label for="continent">Country Continent:</label>
+            <input type="text" id="continent" name="continent" required><br><br>
+            <button type="submit">Submit</button>
+        </form>
+        <br>
+        <div id="resultForAdd"></div>
+    </div>
+</div>
+<button onclick="fetchCountries()">Get Countries</button>
+<ul id="countryList"></ul>
+
+<button onclick="fetchColoredCountries()">Get Coloured Countries</button>
+<ul id="countryColorList"></ul>
+
+<a href="cities">Go back.</a>
+
+<script>
+    document.getElementById('addCountryForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const data = {
+            name: form.name.value,
+            code: form.code.value,
+            capital: form.capital.checked
+        };
+
+        fetch('/countries/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+            },
+            body: JSON.stringify(data)
+        })
+            .then(result => result.text())
+            .then(message => document.getElementById('resultForAdd').innerText = message)
+            .catch(error => {
+                document.getElementById('resultForAdd').innerText = 'Submission failed: ' + error.message;
+            });
+    });
+    function fetchCountries() {
+        fetch('/countries/list', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                const documentList = document.getElementById('countryList');
+                documentList.innerHTML = '';
+                data.forEach(country => {
+                    const li = document.createElement('li');
+                    li.textContent = (String) ("Country with id: " + country.id +", name: " + country.name + ", code: " + country.code + " and continent: " + country.continent);
+                    documentList.appendChild(li);
+                });
+            });
+    }
+    function fetchColoredCountries() {
+        fetch('/countries/colors', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                const documentList = document.getElementById('countryColorList');
+                documentList.innerHTML = '';
+                Object.entries(data).forEach(([country, color]) => {
+                    const li = document.createElement('li');
+                    li.textContent = (String) (country + " has color: " + color); //schimba sa trimita un dto ca sa nu arate naspa
+                    documentList.appendChild(li);
+                });
+            });
+    }
+</script>
+</body>
+</html>
