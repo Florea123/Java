@@ -39,7 +39,7 @@ public class HexGame {
         gameStarted = true;
         player1.sendMessage("The game has started! You are playing as " + player1.getColor());
         player2.sendMessage("The game has started! You are playing as " + player2.getColor());
-        currentPlayer.sendMessage("\nIt's your turn! Current board state:\n" + displayBoard());
+        currentPlayer.sendMessage("It's your turn! Current board state:\n" + displayBoard());
         player1.setTimeExpiredCallback(() -> handleTimeExpired(player1));
         player2.setTimeExpiredCallback(() -> handleTimeExpired(player2));
         player1.startTimer();
@@ -81,7 +81,6 @@ public class HexGame {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
         currentPlayer.startTimer();
         currentPlayer.sendMessage("It's your turn! Current board state:\n" + displayBoard());
-        currentPlayer.sendMessage(getAvailableMoves());
     }
 
     private boolean checkWinCondition(Player player) {
