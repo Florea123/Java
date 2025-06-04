@@ -143,7 +143,6 @@ public class ClientHandler implements Runnable {
                                 boardState.append(";");
                             }
                         }
-                        System.out.println("Serialized Board State: " + boardState);
                         out.println(boardState.toString());
                     } else {
                         out.println("ERROR No game found for player");
