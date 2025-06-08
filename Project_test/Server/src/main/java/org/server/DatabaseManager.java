@@ -102,4 +102,27 @@ public class DatabaseManager {
             return rs.next();
         }
     }
+
+    public void updatePlayerScore(String username, int points) throws SQLException {
+        String update = "UPDATE users SET score = GREATEST(0, score + ?) WHERE username = ?";
+        try (Connection conn = connect();
+             PreparedStatement stmt = conn.prepareStatement(update)) {
+            stmt.setInt(1, points);
+            stmt.setString(2, username);
+            stmt.executeUpdate();
+        }
+    }
+
+    public int getPlayerScore(String username) throws SQLException {
+        String query = "SELECT score FROM users WHERE username = ?";
+        try (Connection conn = connect();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("score");
+            }
+            return 0;
+        }
+    }
 }

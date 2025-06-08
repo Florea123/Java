@@ -76,4 +76,24 @@ public class ChessClient {
     public void clearCheckMessage() {
         this.lastCheckMessage = null;
     }
+
+    public int getPlayerScore(String username) throws IOException {
+        sendMessage("GET_SCORE " + username);
+        String response = receiveMessage();
+        try {
+            return Integer.parseInt(response);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    public void clearMessageQueue() {
+        try {
+            while (in.ready()) {
+                in.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

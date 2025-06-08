@@ -23,6 +23,9 @@ public class GameManager {
     }
 
     public synchronized void removeGame(ChessGame game) {
+        for(String player : game.getPlayers()) {
+            removePlayerSocket(player);
+        }
         games.remove(game);
     }
 

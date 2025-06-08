@@ -108,6 +108,15 @@ public class ClientHandler implements Runnable {
                             if (kingInCheck != null) {
                                 if (game.isCheckmate(kingInCheck)) {
                                     String winner = kingInCheck.equals("white") ? "black" : "white";
+                                    String winnerPlayer = kingInCheck.equals("white") ? game.getBlackPlayer() : game.getWhitePlayer();
+                                    String loserPlayer = kingInCheck.equals("white") ? game.getWhitePlayer() : game.getBlackPlayer();
+                                    try {
+                                        dbManager.updatePlayerScore(winnerPlayer, 20);
+                                        dbManager.updatePlayerScore(loserPlayer, -10);
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     notifyPlayers(game, "CHECKMATE " + winner);
 
                                     gameManager.removeGame(game);
@@ -153,6 +162,24 @@ public class ClientHandler implements Runnable {
                         out.println(game.getCurrentTurn());
                     } else {
                         out.println("ERROR No game found for player");
+                    }
+                } else if ("GET_OPPONENT".equalsIgnoreCase(command)) {
+                    ChessGame game = gameManager.findGameByPlayer(username);
+                    if (game != null) {
+                        String currentPlayer = this.username;
+                        String opponent = game.getWhitePlayer().equals(currentPlayer) ?
+                                game.getBlackPlayer() : game.getWhitePlayer();
+                        out.println(opponent);
+                    } else {
+                        out.println("Unknown");
+                    }
+                } else if ("GET_SCORE".equalsIgnoreCase(command)) {
+                    String username = parts[1];
+                    try {
+                        int score = dbManager.getPlayerScore(username);
+                        out.println(score);
+                    } catch (SQLException e) {
+                        out.println("ERROR: " + e.getMessage());
                     }
                 } else if ("EXIT_LOBBY".equalsIgnoreCase(command)) {
                     String username = parts[1];

@@ -14,24 +14,57 @@ public class ChessBoardFrame extends JFrame {
     private final AtomicBoolean waitingForResponse = new AtomicBoolean(false);
     private String moveResponse = null;
     private String turnResponse = null;
+    private String opponentName;
+    private int playerScore;
+    private int opponentScore;
 
     public ChessBoardFrame(ChessClient client, String playerColor) {
         this.client = client;
         this.playerColor = playerColor;
 
-        setTitle("Chess Game - You are " + playerColor);
-        setSize(800, 800);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(8, 8));
+        client.sendMessage("GET_OPPONENT");
+        try {
+            this.opponentName = client.receiveMessage();
+            this.playerScore = client.getPlayerScore(client.getUsername());
+            this.opponentScore = client.getPlayerScore(opponentName);
+        } catch (IOException e) {
+            this.opponentName = "Unknown";
+            this.playerScore = 0;
+            this.opponentScore = 0;
+        }
 
-        initializeBoard();
+        setTitle("Chess Game - You are " + playerColor);
+        setSize(800, 850);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        JLabel topPlayerLabel = new JLabel(String.format("%s (Score: %d)",
+                playerColor.equals("white") ? opponentName : client.getUsername(),
+                playerColor.equals("white") ? opponentScore : playerScore),
+                SwingConstants.CENTER);
+
+        JLabel bottomPlayerLabel = new JLabel(String.format("%s (Score: %d)",
+                playerColor.equals("white") ? client.getUsername() : opponentName,
+                playerColor.equals("white") ? playerScore : opponentScore),
+                SwingConstants.CENTER);
+
+        topPlayerLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        bottomPlayerLabel.setFont(new Font("Arial", Font.BOLD, 18));
+
+        JPanel boardPanel = new JPanel(new GridLayout(8, 8));
+        initializeBoard(boardPanel);
+
+        add(topPlayerLabel, BorderLayout.NORTH);
+        add(boardPanel, BorderLayout.CENTER);
+        add(bottomPlayerLabel, BorderLayout.SOUTH);
+
         listenForUpdates();
 
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
-    private void initializeBoard() {
+    private void initializeBoard(JPanel boardPanel) {
         try {
             boardState = client.receiveInitialBoard();
 
@@ -52,7 +85,7 @@ public class ChessBoardFrame extends JFrame {
                     square.addActionListener(e -> handleMove(finalRow, finalCol));
 
                     boardButtons[row][col] = square;
-                    add(square);
+                    boardPanel.add(square);
                 }
             }
         } catch (IOException e) {
@@ -161,6 +194,7 @@ public class ChessBoardFrame extends JFrame {
                         SwingUtilities.invokeLater(() -> {
                             JOptionPane.showMessageDialog(this,
                                     "CHECKMATE! " + winner + " wins the game!");
+                            client.clearMessageQueue();
                             dispose();
                             new ChessGameFrame(client);
                         });
