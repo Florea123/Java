@@ -3,6 +3,7 @@ package org.server;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.server.exceptions.InvalidMoveException;
 
 public class ChessGame {
     private final List<String> players = new ArrayList<>(2);

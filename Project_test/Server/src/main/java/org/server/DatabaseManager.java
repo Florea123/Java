@@ -2,6 +2,8 @@ package org.server;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.server.exceptions.UserNotFoundException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Connection;
@@ -47,8 +49,8 @@ public class DatabaseManager {
                 updateStmt.executeUpdate();
                 return true;
             }
+            return false;
         }
-        return false;
     }
 
     public void logoutUser(String username) throws SQLException {
